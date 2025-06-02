@@ -5,40 +5,54 @@ on:
     tags:
       - 'v*'
 
+permissions:
+  contents: write
+
 jobs:
   release:
     runs-on: ubuntu-latest
     
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
+    
+    - name: Extract version from tag
+      id: version
+      run: echo "VERSION=${GITHUB_REF#refs/tags/}" >> $GITHUB_OUTPUT
     
     - name: Create Release
-      id: create_release
-      uses: actions/create-release@v1
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      uses: softprops/action-gh-release@v1
       with:
-        tag_name: ${{ github.ref }}
-        release_name: SnakeByte ${{ github.ref }}
+        name: SnakeByte ${{ steps.version.outputs.VERSION }}
         body: |
-          Release ${{ github.ref }}
+          ## SnakeByte ${{ steps.version.outputs.VERSION }}
           
-          ## Installation
-          
-          Download the `snakebyte.py` file and run:
+          🚀 **Quick Install:**
           ```bash
-          chmod +x snakebyte.py
-          ./snakebyte.py your_binary_file
+          curl -sSL https://raw.githubusercontent.com/${{ github.repository }}/main/install.sh | bash
           ```
+          
+          📥 **Manual Download:**
+          Download `snakebyte.py` below and run:
+          ```bash
+          python snakebyte.py your_binary_file.bin
+          ```
+          
+          ## ✨ Features
+          - Interactive hex and ASCII display
+          - Multiple character encoding support
+          - Search functionality (hex and ASCII)
+          - Multiple color schemes
+          - Cross-platform compatibility
+          - Zero dependencies
+          
+          ## 📋 Requirements
+          - Python 3.6 or later
+          - No external dependencies required
+          
+          ---
+          **Full documentation:** [README](https://github.com/${{ github.repository }}/blob/main/README.md)
+        files: |
+          snakebyte.py
+          install.sh
         draft: false
         prerelease: false
-    
-    - name: Upload Release Asset
-      uses: actions/upload-release-asset@v1
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      with:
-        upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: ./snakebyte.py
-        asset_name: snakebyte.py
-        asset_content_type: text/plain

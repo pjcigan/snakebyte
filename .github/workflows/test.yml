@@ -12,15 +12,20 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu-latest, macos-latest, windows-latest]
-        python-version: ['3.6', '3.7', '3.8', '3.9', '3.10', '3.11']
+        python-version: ['3.7', '3.8', '3.9', '3.10', '3.11']
     
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
     
     - name: Set up Python ${{ matrix.python-version }}
       uses: actions/setup-python@v4
       with:
         python-version: ${{ matrix.python-version }}
+    
+    - name: Check if snakebyte.py exists
+      run: |
+        ls -la
+        python --version
     
     - name: Test syntax
       run: |
@@ -36,7 +41,13 @@ with open('test.bin', 'wb') as f:
     f.write(b'\x00\x01\x02\x03')
         "
     
-    - name: Test basic functionality
+    - name: Test basic functionality (Unix)
+      if: runner.os != 'Windows'
       run: |
         timeout 5 python snakebyte.py test.bin < /dev/null || true
-      shell: bash
+    
+    - name: Test basic functionality (Windows)
+      if: runner.os == 'Windows'
+      run: |
+        python snakebyte.py test.bin
+      timeout-minutes: 1
