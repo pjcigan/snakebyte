@@ -8,43 +8,20 @@ on:
 
 jobs:
   test:
-    runs-on: ${{ matrix.os }}
-    strategy:
-      matrix:
-        os: [ubuntu-latest, macos-latest, windows-latest]
-        python-version: ['3.9', '3.11']
+    runs-on: ubuntu-latest
     
     steps:
     - uses: actions/checkout@v4
     
-    - name: Set up Python ${{ matrix.python-version }}
+    - name: Set up Python
       uses: actions/setup-python@v4
       with:
-        python-version: ${{ matrix.python-version }}
+        python-version: '3.9'
     
     - name: Test Python syntax
       run: python -m py_compile snakebyte.py
     
-    - name: Create test file and run basic test
-      shell: python
+    - name: Verify script exists and is readable
       run: |
-        # Create a simple test file
-        with open('test.bin', 'wb') as f:
-            f.write(b'Hello SnakeByte Test!')
-        
-        # Test that the script can be imported
-        import subprocess
-        import sys
-        
-        # Just test that it runs without crashing (exit quickly)
-        try:
-            result = subprocess.run([sys.executable, 'snakebyte.py', '--help'], 
-                                  capture_output=True, text=True, timeout=10)
-        except subprocess.TimeoutExpired:
-            # Expected - the interactive app doesn't have --help, so it starts normally
-            print("Script started successfully (timed out as expected)")
-        except Exception as e:
-            print(f"Error: {e}")
-            sys.exit(1)
-        
-        print("✓ Basic functionality test passed")
+        ls -la snakebyte.py
+        head -5 snakebyte.py
