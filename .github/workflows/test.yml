@@ -32,14 +32,13 @@ jobs:
         python -m py_compile snakebyte.py
     
     - name: Create test binary file
+      shell: python
       run: |
-        python -c "
-import struct
-with open('test.bin', 'wb') as f:
-    f.write(b'Hello World!')
-    f.write(struct.pack('<i', 42))
-    f.write(b'\x00\x01\x02\x03')
-        "
+        import struct
+        with open('test.bin', 'wb') as f:
+            f.write(b'Hello World!')
+            f.write(struct.pack('<i', 42))
+            f.write(b'\x00\x01\x02\x03')
     
     - name: Test basic functionality (Unix)
       if: runner.os != 'Windows'
