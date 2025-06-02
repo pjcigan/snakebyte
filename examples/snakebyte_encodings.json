@@ -1,0 +1,11 @@
+{
+    "encodings": [
+        "shift_jis",
+        "euc_jp",
+        "big5",
+        {
+            "name": "cp949",
+            "module": "codecs"
+        }
+    ]
+}
